@@ -1,35 +1,33 @@
-import { useState, useEffect } from 'react';
-import { collection, getDocs } from "firebase/firestore";
-import './App.css';
-import { db } from "./firebaseConfig"
+import SignUp from './components/SignUp';
+import Dashboard from "./components/Dashboard";
+import LogIn from "./components/LogIn";
+import NotFound from './components/NotFound';
+import { Container, Navbar } from 'react-bootstrap';
+import { AuthProvider } from './contexts/AuthContext';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import ComingSoon from './components/ComingSoon';
+import useWindowDimensions from './WindowDimensions';
 
 function App() {
-  const [users, setUsers] = useState([]);
-  const usersCollectionRef = collection(db, "users");
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const data = await getDocs(usersCollectionRef);
-      setUsers(data.docs.map((doc) => ({...doc.data(), id: doc.id})));
-    }
-
-    getUsers();
-  }, [])
+  const { height, width } = useWindowDimensions();
 
   return (
-    <div className="App">
-      {users.map((user) => {
-        return (
-        <div>
-          <h1>Name: {user.name}</h1>
-          <h1>Sex: {user.sex}</h1>
-          <h1>Email: {user.email}</h1>
-          <h1>Country: {user.country}</h1>
-        </div>
-        );
-      })}
+    <Container
+    className="d-flex align-items-center justify-content-center"
+    style={{ minHeight: height }}
+    >
+    <div className="w-100" style={{ maxWidth: "400px" }}>
+      <Router>
+        <AuthProvider>
+          <Routes>
+            <Route exact path="/" element={<ComingSoon />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
+      </Router>
     </div>
-  );
+    </Container>
+);
 }
 
 export default App;
